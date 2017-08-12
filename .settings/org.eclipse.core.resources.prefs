@@ -1,3 +1,6 @@
 eclipse.preferences.version=1
 encoding//src/main/java/pers/analyze/Analyze.java=UTF-8
+encoding//src/main/resources/properties/cellNumInfo.properties=UTF-8
+encoding//src/main/resources/properties/chineseInfo.properties=UTF-8
+encoding//src/main/resources/properties/englishInfo.properties=UTF-8
 encoding/<project>=UTF-8
