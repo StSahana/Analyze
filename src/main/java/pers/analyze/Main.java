@@ -6,6 +6,7 @@ import pers.analyze.util.ExcellUtil;
 
 public class Main {
 	public static void main(String[] args) throws PcapNativeException {
-		ExcellUtil.WriteToExcell(new Analyze().getSearchRecord());
+		ExcellUtil.WriteToExcell(new Analyze().getSearchRecord(),new Analyze().getContentRecord());
+		System.out.println();
 	}
 }

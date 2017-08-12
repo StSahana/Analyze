@@ -1,9 +1,17 @@
 package pers.analyze;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.Test;
+
+import com.alibaba.fastjson.JSON;
 
 public class RegexTest {
 	
@@ -39,4 +47,14 @@ public class RegexTest {
 	      }
 	}
 
+	@Test
+	public void testString(){
+//		String s="x";
+//		System.out.println(s.substring(0,s.lastIndexOf("_")));
+		 Map<Integer,List<String>> contentRecord=new HashMap<Integer,List<String>>();//需要记录内容的部分
+		 contentRecord.put(1,new ArrayList<String>());
+		 contentRecord.get(1).add("a");
+		 contentRecord.get(1).add("a");
+		 System.out.println(JSON.toJSONString(contentRecord));
+	}
 }

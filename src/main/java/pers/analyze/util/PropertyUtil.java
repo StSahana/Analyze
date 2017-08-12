@@ -13,7 +13,7 @@ public class PropertyUtil {
 		Properties prop = new Properties();
 		FileInputStream in;
 		try {
-			in = new FileInputStream("src/main/resources/" + fileName);
+			in = new FileInputStream("src/main/resources/properties/" + fileName);
 			prop.load(in);
 			in.close();
 		} catch (FileNotFoundException e) {

@@ -115,4 +115,9 @@ public class Infomation {
 		return englishInfo;
 	}
 
+	public Map<String, String> getRegex() {
+		return regex;
+	}
+	
+
 }
