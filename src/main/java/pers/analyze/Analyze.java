@@ -15,6 +15,8 @@ import org.pcap4j.core.Pcaps;
 import org.pcap4j.packet.Packet;
 import org.pcap4j.packet.TcpPacket;
 
+import com.alibaba.fastjson.JSON;
+
 import pers.analyze.util.EncodeUtil;
 
 /**
@@ -23,7 +25,7 @@ import pers.analyze.util.EncodeUtil;
 public class Analyze {
 	private static final String FILE_NAME = "search";
 	private static final String PCAP_FILE = "src/main/resources/" + FILE_NAME + ".pcap";
-    Map<Integer,Map<String,String>> contentRecord=new HashMap<Integer,Map<String,String>>();//需要记录内容的部分
+	static Map<Integer, Map<String, String>> contentRecord = new HashMap<Integer, Map<String, String>>();// 需要记录内容的部分
 	boolean flag = true;
 
 	public Map<Integer, Set<String>> getSearchRecord() throws PcapNativeException {
@@ -42,18 +44,24 @@ public class Analyze {
 				TcpPacket tcpPacket = packet.get(TcpPacket.class);
 				if (tcpPacket != null) {
 					if (tcpPacket.getPayload() != null) {
-						Map<String,String> tempMap=new HashMap<String,String>();
- 						System.out.println(new String(tcpPacket.getPayload().getRawData(),"gbk"));
-						String rawData = EncodeUtil.byteToString(tcpPacket.getPayload().getRawData()) + packet.toString();
-						String gbkData=new String(tcpPacket.getPayload().getRawData(),"gbk");
-						tempMap.put("body", gbkData);//内容
-						if(Pattern.matches("HTTP)", packet.toString())){//http头
-							tempMap.put("httpHeader",gbkData);
-						}else{
-							tempMap.put("httpHeader","");
+						Map<String, String> tempMap = new HashMap<String, String>();
+						// System.out.println(new
+						// String(tcpPacket.getPayload().getRawData(),"gbk"));
+						String rawData = EncodeUtil.byteToString(tcpPacket.getPayload().getRawData())
+								+ packet.toString();
+						String gbkData = new String(tcpPacket.getPayload().getRawData(), "gbk");
+						if (packet.toString().contains("HTTP)")) {
+							tempMap.put("body", gbkData);// 内容
+						} else {
+							tempMap.put("body", tcpPacket.getPayload().toString());// 内容
 						}
-						tempMap.put("export", FILE_NAME+"_"+count+".pcap");
-//						Set<String> tempSet = findWords(rawData,gbkData);
+						if (packet.toString().contains("HTTP)") && gbkData.contains("HTTP")) {// http头
+							tempMap.put("header", gbkData);
+						} else {
+							tempMap.put("header", "");
+						}
+						tempMap.put("exportName", FILE_NAME + "_" + count + ".pcap");
+						// Set<String> tempSet = findWords(rawData,gbkData);
 						Infomation info = new Infomation();
 						Set<String> tempSet = new HashSet<String>();
 						// 检测中文
@@ -66,11 +74,17 @@ public class Analyze {
 							if (flag) {
 								tempSet.add(k.split("_")[0]);
 								if (k.split("_").length > 1) {
-//									tempSet.add(k.split("_")[1]);
-									if(tempMap.containsKey("secret")){
-										tempMap.put("secret",tempMap.get("secret")+"、"+k.split("_")[1]);
-									}else{
-										tempMap.put("secret",k.split("_")[1]);
+									// tempSet.add(k.split("_")[1]);
+									// System.out.println(tempMap.containsKey("charset"));
+									if (tempMap.containsKey("charset")) {
+										// if(!tempMap.get("charset").contains(k.split("_")[1])){
+										String regex = k.split("_")[1] + "、.*|" + k.split("_")[1] + "|.*、"
+												+ k.split("_")[1] + "|.*、" + k.split("_")[1] + "、.*";
+										if (!Pattern.matches(regex, tempMap.get("charset"))) {
+											tempMap.put("charset", tempMap.get("charset") + "、" + k.split("_")[1]);
+										}
+									} else {
+										tempMap.put("charset", k.split("_")[1]);
 									}
 								}
 							}
@@ -87,19 +101,25 @@ public class Analyze {
 							if (flag) {
 								tempSet.add(k.split("_")[0]);
 								if (k.split("_").length > 1) {
-//									tempSet.add(k.split("_")[1]);
-									if(tempMap.containsKey("secret")){
-										tempMap.put("secret",tempMap.get("secret")+"、"+k.split("_")[1]);
-									}else{
-										tempMap.put("secret",k.split("_")[1]);
+									// tempSet.add(k.split("_")[1]);
+									if (tempMap.containsKey("charset")) {
+										// if(!tempMap.get("charset").contains(k.split("_")[1])){
+										String regex = k.split("_")[1] + "、.*|" + k.split("_")[1] + "|.*、"
+												+ k.split("_")[1] + "|.*" + k.split("_")[1] + "、.*";
+
+										if (!Pattern.matches(regex, tempMap.get("charset"))) {
+											tempMap.put("charset", tempMap.get("charset") + "、" + k.split("_")[1]);
+										}
+									} else {
+										tempMap.put("charset", k.split("_")[1]);
 									}
 								}
 							}
 							flag = true;
 						});
-						
-						info.getRegex().forEach((k,v)->{
-							if(Pattern.matches(v, gbkData)){
+
+						info.getRegex().forEach((k, v) -> {
+							if (Pattern.matches(v, gbkData)) {
 								tempSet.add(k);
 							}
 						});
@@ -108,6 +128,7 @@ public class Analyze {
 					}
 				}
 			} catch (Exception e) {
+				// e.printStackTrace();
 				System.out.println("已处理" + count + "条数据包");
 				break;
 			}
@@ -129,9 +150,9 @@ public class Analyze {
 		});
 		return tempRecord;
 	}
-	
-	//匹配数据
-	public Set<String> findWords(String rawData,String gbkData){
+
+	// 匹配数据
+	public Set<String> findWords(String rawData, String gbkData) {
 		Infomation info = new Infomation();
 		Set<String> tempSet = new HashSet<String>();
 		// 检测中文
@@ -165,19 +186,19 @@ public class Analyze {
 			}
 			flag = true;
 		});
-		
-		info.getRegex().forEach((k,v)->{
-			if(Pattern.matches(v, gbkData)){
+
+		info.getRegex().forEach((k, v) -> {
+			if (Pattern.matches(v, gbkData)) {
 				tempSet.add(k);
 			}
 		});
-		
+
 		return tempSet;
 	}
 
 	public Map<Integer, Map<String, String>> getContentRecord() {
+		// System.out.println(JSON.toJSONString(contentRecord));
 		return contentRecord;
 	}
-	
-	
+
 }

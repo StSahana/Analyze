@@ -23,10 +23,12 @@ public class RegexTest {
 		      String pattern = ".*runoob.*";
 		 
 		      boolean isMatch = Pattern.matches(pattern, content);
-		      System.out.println("字符串中是否包含了 'runoob' 子字符串? " + isMatch);
+//		      System.out.println("字符串中是否包含了 'runoob' 子字符串? " + isMatch);
+		      System.out.println(Pattern.matches("Gb2312、.*|Gb2312|.*、Gb2312|.*Gb2312","Gb2312UX、UTF8"));
+		      System.out.println(Pattern.matches("(a*b)", "aaaaab"));
 	}
 	
-	@Test
+//	@Test
 	public void testRegex2(){
 		// 按指定模式在字符串查找
 	      String line = "This order was placed for QT3000! OK?";
@@ -47,7 +49,7 @@ public class RegexTest {
 	      }
 	}
 
-	@Test
+//	@Test
 	public void testString(){
 //		String s="x";
 //		System.out.println(s.substring(0,s.lastIndexOf("_")));

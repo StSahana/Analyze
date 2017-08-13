@@ -36,7 +36,7 @@ public class ExcellUtil {
 					System.out.println("文件写入错误：" + colName + "没有对应列号");
 				}
 			});
-
+//			System.out.println(contentRecord);
 			contentRecord.get(k).forEach((colName, content) -> {
 				HSSFCell c1 = row.createCell(cellNum.get(colName));
 				c1.setCellValue(content);
